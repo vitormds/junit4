@@ -1,12 +1,18 @@
 package br.ce.wcaquino.servicos;
 
 
+
+import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
+import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -17,75 +23,72 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.servicos.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.servicos.exceptions.LocadoraException;
-import br.ce.wcaquino.utils.DataUtils;
+
 
 public class LocacaoServiceTest {
+
+	private LocacaoService service;
 	
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
 	
 	@Rule
-	public ExpectedException exception =  ExpectedException.none();
+	public ExpectedException exception = ExpectedException.none();
+	
+	@Before
+	public void setup(){
+		service = new LocacaoService();
+	}
 	
 	@Test
 	public void testeLocacao() throws Exception {
 		//cenario
-		 LocacaoService service = new LocacaoService();
-		 Usuario usuario = new Usuario("Usuario 1");
-		 Filme filme = new Filme("Filme 1", 2, 5.0);
-	
-			 //acao
-			 Locacao locacao = service.alugarFilme(usuario, filme);
-			 
-			 //verificacao
-			 error.checkThat(locacao.getValor(), is(5.0)); // consegue vê mais de um erro por vez 
-			 error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-			 error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterDataComDiferencaDias(0)), is(true));
+		Usuario usuario = new Usuario("Usuario 1");
+		Filme filme = new Filme("Filme 1", 1, 5.0);
+		
+		//acao
+		Locacao locacao = service.alugarFilme(usuario, filme);
 			
+		//verificacao
+		error.checkThat(locacao.getValor(), is(equalTo(5.0)));
+		error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
+		error.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
 	}
 	
-	
-
 	@Test(expected = FilmeSemEstoqueException.class)
-	public void testeLocacao_fimeSemEstoque() throws Exception {
+	public void testLocacao_filmeSemEstoque() throws Exception{
+		//cenario
+		Usuario usuario = new Usuario("Usuario 1");
+		Filme filme = new Filme("Filme 2", 0, 4.0);
 		
-		 LocacaoService service = new LocacaoService();
-		 Usuario usuario = new Usuario("Usuario 1");
-		 Filme filme = new Filme("Filme 1", 0, 5.0);
-
-		 service.alugarFilme(usuario, filme);
+		//acao
+		service.alugarFilme(usuario, filme);
 	}
 	
-	
 	@Test
-	public void testeLocacao_usuarioVazio() throws FilmeSemEstoqueException  {
+	public void testLocacao_usuarioVazio() throws FilmeSemEstoqueException{
+		//cenario
+		Filme filme = new Filme("Filme 2", 1, 4.0);
 		
-		 LocacaoService service = new LocacaoService();		 
-		 Filme filme = new Filme("Filme 1", 2, 5.0);
-		 try {
-			 service.alugarFilme(null, filme);
-			 Assert.fail();
+		//acao
+		try {
+			service.alugarFilme(null, filme);
+			Assert.fail();
 		} catch (LocadoraException e) {
-			Assert.assertThat(e.getMessage(), is("Usuario vazio"));
+			assertThat(e.getMessage(), is("Usuario vazio"));
 		}
-		 System.out.println("Forma robusta"); // melhor forma, pois é a mais completa.
 	}
 	
+
 	@Test
-	public void testeLocacao_filmeVazio() throws FilmeSemEstoqueException, LocadoraException  {
+	public void testLocacao_FilmeVazio() throws FilmeSemEstoqueException, LocadoraException{
+		//cenario
+		Usuario usuario = new Usuario("Usuario 1");
 		
-		 LocacaoService service = new LocacaoService();		 
-		 Usuario usuario = new Usuario("Usuario 1");
+		exception.expect(LocadoraException.class);
+		exception.expectMessage("Filme vazio");
 		
-		 exception.expect(LocadoraException.class);
-		 exception.expectMessage("Filme vazio");
-		 
-		 service.alugarFilme(usuario, null);
-		 
-		 System.out.println("Forma nova");
-		 
+		//acao
+		service.alugarFilme(usuario, null);
 	}
-	
-	
-	
 }
