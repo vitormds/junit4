@@ -1,11 +1,12 @@
 package br.ce.wcaquino.entidades;
 
 import java.util.Date;
+import java.util.List;
 
 public class Locacao {
 
 	private Usuario usuario;
-	private Filme filme;
+	private List<Filme> filmes;
 	private Date dataLocacao;
 	private Date dataRetorno;
 	private Double valor;
@@ -34,11 +35,12 @@ public class Locacao {
 	public void setValor(Double valor) {
 		this.valor = valor;
 	}
-	public Filme getFilme() {
-		return filme;
+
+	public List<Filme> getFilmes() {
+		return filmes;
 	}
-	public void setFilme(Filme filme) {
-		this.filme = filme;
+	public void setFilmes(List<Filme> filmes) {
+		this.filmes = filmes;
 	}
 	@Override
 	public int hashCode() {
@@ -46,7 +48,7 @@ public class Locacao {
 		int result = 1;
 		result = prime * result + ((dataLocacao == null) ? 0 : dataLocacao.hashCode());
 		result = prime * result + ((dataRetorno == null) ? 0 : dataRetorno.hashCode());
-		result = prime * result + ((filme == null) ? 0 : filme.hashCode());
+		result = prime * result + ((filmes == null) ? 0 : filmes.hashCode());
 		result = prime * result + ((usuario == null) ? 0 : usuario.hashCode());
 		result = prime * result + ((valor == null) ? 0 : valor.hashCode());
 		return result;
@@ -70,10 +72,10 @@ public class Locacao {
 				return false;
 		} else if (!dataRetorno.equals(other.dataRetorno))
 			return false;
-		if (filme == null) {
-			if (other.filme != null)
+		if (filmes == null) {
+			if (other.filmes != null)
 				return false;
-		} else if (!filme.equals(other.filme))
+		} else if (!filmes.equals(other.filmes))
 			return false;
 		if (usuario == null) {
 			if (other.usuario != null)
