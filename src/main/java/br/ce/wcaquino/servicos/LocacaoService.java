@@ -5,6 +5,9 @@ import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.junit.Assume;
+
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -16,6 +19,7 @@ public class LocacaoService {
 	
 	
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws LocadoraException, FilmeSemEstoqueException {
+		
 		
 		if(usuario == null) {
 			throw new LocadoraException("Usuario vazio") ;
@@ -55,7 +59,7 @@ public class LocacaoService {
 		dataEntrega = adicionarDias(dataEntrega, 1);
 		
 		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
-			
+			dataEntrega = adicionarDias(dataEntrega, 1);
 		}
 		
 		locacao.setDataRetorno(dataEntrega);
